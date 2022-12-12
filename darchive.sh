@@ -6,7 +6,7 @@
 # folder for indefinite storage
 # By ***REMOVED***
 #
-# Last modified: 2021.12.14-13:12 +0100
+# Last modified: 2022.12.12-21:49 +0100
 #
 # =============================================================== #
 
@@ -84,14 +84,20 @@ while [[ $# -gt 0 ]]; do
 done
 set -- "${positional[@]}"
 
+# Handle, and return some info on, failure
+function fail() {
+    echo "A necessary directory seem to be absent." >&2
+    exit 1
+}
+
 # Make dir an absolute path
-dir=$(builtin cd "$1"; pwd)
+dir=$(builtin cd "$1" || fail; pwd)
 
 if [[ -z "$archive_base_dir" ]];then
-    archive_base_dir="$(builtin cd "$dir"/..; pwd)"
+    archive_base_dir="$(builtin cd "$dir"/.. || fail; pwd)"
 else
     # Make archive_base_dir absolute
-    archive_base_dir="$(builtin cd "$archive_base_dir"; pwd)"
+    archive_base_dir="$(builtin cd "$archive_base_dir" || fail; pwd)"
 fi
 
 if [[ ! $silent == "true" ]]; then
@@ -107,16 +113,16 @@ for d in "$dir"/*/; do
     for file in $(find "$d" -type f -not -wholename "*/.*"); do
         case $interval in
             year)
-                subsubdir="$(date -d "@$(stat -c '%Y' $file)" '+%Y')"
+                subsubdir="$(date -d "@$(stat -c '%Y' "$file")" '+%Y')"
                 ;;
             month)
-                subsubdir=$(date -d "@$(stat -c '%Y' $file)" '+%Y-%m')
+                subsubdir="$(date -d "@$(stat -c '%Y' "$file")" '+%Y-%m')"
                 ;;
             week)
-                subsubdir=$(date -d "@$(stat -c '%Y' $file)" '+%Y_w%W')
+                subsubdir="$(date -d "@$(stat -c '%Y' "$file")" '+%Y_w%W')"
                 ;;
             day)
-                subsubdir=$(date -d "@$(stat -c '%Y' $file)" '+%Y-%m-%d')
+                subsubdir="$(date -d "@$(stat -c '%Y' "$file")" '+%Y-%m-%d')"
                 ;;
             none)
                 subsubdir=""
