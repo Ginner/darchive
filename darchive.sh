@@ -6,9 +6,11 @@
 # folder for indefinite storage
 # By ***REMOVED***
 #
-# Last modified: 2022.12.13-09:48 +0100
+# Last modified: 2022.12.13-10:36 +0100
 #
 # =============================================================== #
+#
+# TODO: Use systemd-cat (see backup.sh)
 
 # Defaults
 interval="month"
