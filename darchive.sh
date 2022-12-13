@@ -6,7 +6,7 @@
 # folder for indefinite storage
 # By ***REMOVED***
 #
-# Last modified: 2022.12.12-21:49 +0100
+# Last modified: 2022.12.13-06:34 +0100
 #
 # =============================================================== #
 
@@ -91,27 +91,26 @@ function fail() {
 }
 
 # Make dir an absolute path
-dir=$(builtin cd "$1" || fail; pwd)
+dir="$(builtin cd "$1" || fail; pwd)"
 
 if [[ -z "$archive_base_dir" ]];then
     archive_base_dir="$(builtin cd "$dir"/.. || fail; pwd)"
 else
-    # Make archive_base_dir absolute
     archive_base_dir="$(builtin cd "$archive_base_dir" || fail; pwd)"
 fi
 
-if [[ ! $silent == "true" ]]; then
+if [[ ! "$silent" == "true" ]]; then
     echo "Archiving the contents of $dir into $archive_base_dir"
-    if [[ ! $interval == "none" ]]; then
+    if [[ ! "$interval" == "none" ]]; then
         echo "Files are put in folders denoting the modification $interval"
     fi
 fi
 
 for d in "$dir"/*/; do
     [[ -L "${d%/}"  ]] && continue
-    subdir=$(basename "$d")
-    for file in $(find "$d" -type f -not -wholename "*/.*"); do
-        case $interval in
+    subdir="$(basename "$d")"
+    for file in $(find "$d" -type f -not -path "*/.*"); do
+        case "$interval" in
             year)
                 subsubdir="$(date -d "@$(stat -c '%Y' "$file")" '+%Y')"
                 ;;
@@ -129,12 +128,12 @@ for d in "$dir"/*/; do
                 ;;
         esac
         targetdir="$archive_base_dir"/"$subdir"/"$subsubdir"
-        if [[ ! -d $targetdir ]]; then
+        if [[ ! -d "$targetdir" ]]; then
             /usr/bin/mkdir --parents --verbose "$targetdir"
         fi
         # Consider using rsync for moving files, it might not be as omnipresent though...
         # That would make it posssible to make a backup dir
-        if [[ $silent == "true" ]]; then
+        if [[ "$silent" == "true" ]]; then
             /usr/bin/mv --backup=numbered --force --target-directory="$targetdir" "$file" >/dev/null
         elif [[ "$verbose" == "true" ]]; then
             /usr/bin/mv --backup=numbered --force --verbose --target-directory="$targetdir" "$file"
