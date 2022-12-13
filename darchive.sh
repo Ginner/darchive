@@ -6,7 +6,7 @@
 # folder for indefinite storage
 # By ***REMOVED***
 #
-# Last modified: 2022.12.13-06:36 +0100
+# Last modified: 2022.12.13-09:48 +0100
 #
 # =============================================================== #
 
@@ -109,7 +109,8 @@ fi
 for d in "$dir"/*/; do
     [[ -L "${d%/}"  ]] && continue
     subdir="$(basename "$d")"
-    for file in $(find "$d" -type f -not -path "*/.*"); do
+    find "$d" -type f -not -path "*/.*" -print0 | while read -r -d $'\0' file; do
+    # for file in $(find "$d" -type f -not -path "*/.*"); do
         case "$interval" in
             year)
                 subsubdir="$(date -d "@$(stat -c '%Y' "$file")" '+%Y')"
@@ -134,11 +135,11 @@ for d in "$dir"/*/; do
         # Consider using rsync for moving files, it might not be as omnipresent though...
         # That would make it posssible to make a backup dir
         if [[ "$silent" == "true" ]]; then
-            /usr/bin/mv --backup=numbered --force --target-directory="$targetdir" \""$file"\" >/dev/null
+            /usr/bin/mv --backup=numbered --force --target-directory="$targetdir" "$file" >/dev/null
         elif [[ "$verbose" == "true" ]]; then
-            /usr/bin/mv --backup=numbered --force --verbose --target-directory="$targetdir" \""$file"\"
+            /usr/bin/mv --backup=numbered --force --verbose --target-directory="$targetdir" "$file"
         else
-            /usr/bin/mv --backup=numbered --force --target-directory="$targetdir" \""$file"\"
+            /usr/bin/mv --backup=numbered --force --target-directory="$targetdir" "$file"
         fi
     done
 done
