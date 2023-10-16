@@ -4,9 +4,9 @@
 #
 # Moves media files from a sync folder to the appropriate archive
 # folder for indefinite storage
-# By ***REMOVED***
+# By Ginner
 #
-# Last modified: 2022.12.13-10:36 +0100
+# Last modified: 2023.10.16-21:26 +0200
 #
 # =============================================================== #
 #
